@@ -16,7 +16,7 @@
 
 8.\* BZOJ
 
-## 协议：[MIT协议](https://choosealicense.com/licenses/mit/)
+## 版权声明：[MIT协议](https://choosealicense.com/licenses/mit/)
 ```
 MIT License
 
