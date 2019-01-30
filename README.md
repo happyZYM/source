@@ -1,4 +1,4 @@
-﻿# happyZYM在Luogu上提交的代码
+﻿# happyZYM在的代码仓库
 ## 关于文件名的解释：
 1.\* P\*
 
