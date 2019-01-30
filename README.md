@@ -41,3 +41,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 ## 因使用该代码库不当导致任何后果（被Luogu反作弊系统ban了）责任自负！
+
