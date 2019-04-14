@@ -1,65 +1,65 @@
 #include<cstdio>
 #include<vector>
+#include<stack>
 using namespace std;
-const int maxn=1e6+7;
-struct TwoSAT
+template<typename T> inline void read(T& t)
 {
-	int n;
-	vector<int> G[maxn*2];
-	bool mark[maxn*2];
-	int S[maxn*2],c;
-	bool dfs(int x)
+	t=0; bool f=false; char ch;
+	while(ch=getchar(),!((ch>='0'&&ch<='9')||ch=='-'));
+	if(ch=='-') f=true,ch=getchar();
+	t=ch-'0';
+	while(ch=getchar(),ch>='0'&&ch<='9') t=t*10+ch-'0';
+	if(f) t=-t;
+}
+template<typename T,typename... Args> inline void read(T& t,Args&... args) { read(t); read(args...); }
+const int maxn=1e6+7;
+int n,m,x,xval,y,yval;
+vector<int> G[maxn*2];
+int id[maxn][70];
+int dfn[maxn*2],lowlink[maxn*2],sccno[maxn*2],dfs_cnt,scc_cnt;
+stack<int> stk;
+void dfs(int u)
+{
+	dfn[u]=lowlink[u]=++dfs_cnt;
+	stk.push(u);
+	for(int i=0;i<G[u].size();i++)
 	{
-		if(mark[x^1]) return false;
-		if(mark[x]) return true;
-		mark[x]=true;
-		S[c++]=x;
-		for(int i=0;i<G[x].size();i++)
-			if(!dfs(G[x][i])) return false;
-		return true;
+		int v=G[u][i];
+		if(!dfn[v])
+		{
+			dfs(v);
+			lowlink[u]=min(lowlink[u],lowlink[v]);
+		}
+		else if(!sccno[v]) lowlink[u]=min(lowlink[u],dfn[v]);
 	}
-	//x = xval or y = yval
-	void add_clause(int x,int xval,int y,int yval)
+	if(lowlink[u]==dfn[u])
 	{
-		x=x*2+xval;
-		y=y*2+yval;
-		G[x^1].push_back(y);
-		G[y^1].push_back(x);
+		scc_cnt++;
+		while(true)
+		{
+			int x=stk.top(); stk.pop();
+			sccno[x]=scc_cnt;
+			if(x==u) break;
+		}
 	}
-	bool solve()
-	{
-		for(int i=0;i<n*2;i+=2)
-			if(!mark[i]&&!mark[i+1])
-			{
-				c=0;
-				if(!dfs(i))
-				{
-					while(c>0) mark[S[--c]]=false;
-					if(!dfs(i+1)) return false;
-				}
-			}
-		return true;
-	}
-}Ago;
-int m,x,xval,y,yval;
+}
 int main()
 {
 #ifdef local
 	freopen("pro.in","r",stdin);
 #endif
-	scanf("%d%d",&Ago.n,&m);
+	read(n,m);
 	while(m-->0)
 	{
-		scanf("%d%d%d%d",&x,&xval,&y,&yval);
-		Ago.add_clause(x,xval,y,yval);
+		read(x,xval,y,yval);
+		x--; y--;
+		x=x*2+xval; y=y*2+yval;
+		G[x^1].push_back(y);
+		G[y^1].push_back(x);
 	}
-	if(!Ago.solve()) printf("IMPOSSIBLE\n");
-	else
-	{
-		for(int i=1;i<=Ago.n;i++)
-			if(Ago.mark[i<<1]) printf("0 ");
-			else printf("1 ");
-		printf("\n");
-	}
+	for(int i=0;i<2*n;i++) if(!dfn[i]) dfs(i);
+	for(int i=0;i<2*n;i+=2) if(sccno[i]==sccno[i+1]) { puts("IMPOSSIBLE"); return 0; }
+	puts("POSSIBLE");
+	for(int i=0;i<n;i++) printf("%d ",sccno[i*2]>sccno[i*2+1]); puts("");
 	return 0;
 }
