@@ -16,5 +16,7 @@
 
 8.\* BZOJ\*
 
+p.\* 其它题目，提交地址见第一行注释
+
 ## /problems 文件夹：代码对应的题面
 ## 版权声明：[MIT协议](https://choosealicense.com/licenses/mit/)
