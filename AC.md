@@ -1,8 +1,8 @@
-# 总AC数： 554
+# 总AC数： 555
 # 洛谷： 264
 # UVA： 267
 # AtCoder： 2
 # CodeForces： 10
 # POJ： 5
 # BZOJ： 1
-# 其它OJ： 5
+# 其它OJ： 6
