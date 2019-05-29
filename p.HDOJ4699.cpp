@@ -1,3 +1,4 @@
+//http://acm.hdu.edu.cn/showproblem.php?pid=4699
 #include<cstdio>
 #include<algorithm>
 using namespace std;
