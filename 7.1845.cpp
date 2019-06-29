@@ -1,4 +1,49 @@
 #include<cstdio>
+#include<algorithm>
+using namespace std;
+int a,b,m,res=1,mod=9901;
+int p[20],c[20];
+void fj(int n)
+{
+	m=0;
+	for(int i=2;i*i<=n;i++) if(n%i==0)
+	{
+		p[++m]=i; c[m]=0;
+		while(n%i==0) n/=i,c[m]++;
+	}
+	if(n>1) p[++m]=n,c[m]=1;
+}
+inline int ksm(int a,long long b)
+{
+	int res=1; a%=mod;
+	for(;b;b>>=1,a=a*a%mod) b&1?res=res*a%mod:0;
+	return res;
+}
+int main()
+{
+#ifdef local
+	freopen("pro.in","r",stdin);
+#endif
+	scanf("%d%d",&a,&b);
+	fj(a);
+	for(int i=1;i<=m;i++)
+	{
+		if((p[i]-1)%mod==0)
+		{
+			res=((long long)b*c[i]+1)%mod*res%mod;
+			continue;
+		}
+		int x=ksm(p[i],(long long)b*c[i]+1);
+		x=(x-1+mod)%mod;
+		int y=p[i]-1;
+		y=ksm(y,mod-2);
+		res=(long long)res*x%mod*y%mod;
+	}
+	printf("%d\n",res);
+	return 0;
+}
+/*
+#include<cstdio>
 #include<vector>
 #include<algorithm>
 using namespace std;
@@ -37,3 +82,4 @@ int main()
 	printf("%lld\n",res);
 	return 0;
 }
+*/
