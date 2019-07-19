@@ -1,116 +1,76 @@
 #include<cstdio>
 #include<cstdlib>
+#include<ctime>
 const int maxn=100005;
-const int oo=1e9+7;
-struct Node
+int n,rt,x,y,z,op,a,ch[maxn][2],val[maxn],rd[maxn],sz[maxn],cnt;
+inline void PushUp(int x) { sz[x]=sz[ch[x][0]]+1+sz[ch[x][1]]; }
+inline int NewNode(int v) { val[++cnt]=v; sz[cnt]=1; rd[cnt]=rand(); return cnt; }
+int merge(int x,int y)
 {
-	int v,r,size,cnt;
-	Node *ch[2];
-	inline void maintain() { size=ch[0]->size+ch[1]->size+cnt; }
-};
-Node *null=new Node(),mem[maxn],*mcnt=mem,*root;
-inline void Rotate(Node* &o,int d)
-{
-	Node *p=o->ch[d^1]; o->ch[d^1]=p->ch[d]; p->ch[d]=o;
-	o->maintain(); p->maintain(); o=p;
+	if(!x||!y) return x+y;
+	if(rd[x]<rd[y]) { ch[x][1]=merge(ch[x][1],y); PushUp(x); return x; }
+	else { ch[y][0]=merge(x,ch[y][0]); PushUp(y); return y; }
 }
-inline void Insert(Node* &o,int v)
+void split(int o,int v,int &x,int &y)
 {
-	if(o==null) { mcnt->v=v; mcnt->cnt=mcnt->size=1; mcnt->ch[0]=mcnt->ch[1]=null; mcnt->r=rand(); o=mcnt++; }
+	if(!o) x=y=0;
 	else
 	{
-		if(o->v==v) { o->cnt++; o->size++; return; }
-		int d=v>o->v;
-		Insert(o->ch[d],v); o->maintain();
-		if(o->ch[d]->r > o->r) Rotate(o,d^1);
+		if(val[o]<=v) { x=o; split(ch[o][1],v,ch[o][1],y); }
+		else { y=o; split(ch[o][0],v,x,ch[o][0]); }
+		PushUp(o);
 	}
 }
-void Remove(Node* &o,int v)
+inline int kth(int o,int k)
 {
-	if(o==null) return;
-	if(o->v==v)
+	while(true)
 	{
-		if(o->cnt>1) { o->cnt--; o->size--; return; }
-		if(o->ch[0]==null&&o->ch[1]==null) o=null;
-		else
-		{
-			if(o->ch[1]==null||o->ch[0]->r>o->ch[1]->r) Rotate(o,1),Remove(o->ch[1],v);
-			else Rotate(o,0),Remove(o->ch[0],v);
-			o->maintain(); 
-		}
-		return;
+		if(k<=sz[ch[o][0]]) o=ch[o][0];
+		else if(k==sz[ch[o][0]]+1) return o;
+		else { k-=sz[ch[o][0]]+1; o=ch[o][1]; }
 	}
-	Remove(o->ch[v>o->v],v); o->maintain();
-}
-int Rank(Node* &o,int v)
-{
-	if(o==null) return 0;
-	if(o->v==v) return o->ch[0]->size+1;
-	if(v<o->v) return Rank(o->ch[0],v);
-	if(v>o->v) return o->ch[0]->size+o->cnt+Rank(o->ch[1],v);
-}
-int Kth(Node* &o,int k)
-{
-	if(o->ch[0]->size>=k) return Kth(o->ch[0],k);
-	if(o->ch[0]->size+o->cnt>=k) return o->v;
-	return Kth(o->ch[1],k-o->ch[0]->size-o->cnt);
-}
-int Pre(Node* &root,int v)
-{
-	int res=-oo;
-	Node* p=root;
-	while(p!=null)
-	{
-		if(v==p->v)
-		{
-			if(p->ch[0]!=null)
-			{
-				p=p->ch[0];
-				while(p->ch[1]!=null) p=p->ch[1];
-				res=p->v;
-			}
-			break;
-		}
-		if(p->v<v&&p->v>res) res=p->v;
-		p=p->ch[v>p->v];
-	}
-	return res;
-}
-int Next(Node* &root,int v)
-{
-	int res=oo;
-	Node* p=root;
-	while(p!=null)
-	{
-		if(v==p->v)
-		{
-			if(p->ch[1]!=null)
-			{
-				p=p->ch[1];
-				while(p->ch[0]!=null) p=p->ch[0];
-				res=p->v;
-			}
-			break;
-		}
-		if(p->v>v&&p->v<res) res=p->v;
-		p=p->ch[v>p->v];
-	}
-	return res;
 }
 int main()
 {
-	null->ch[0]=null->ch[1]=null; null->size=null->cnt=0; root=null;
-	int n,opt,x; scanf("%d",&n);
-	Insert(root,-oo); Insert(root,oo);
-	while(n-->0)
+#ifdef local
+	freopen("pro.in","r",stdin);
+#endif
+	srand(1022);
+	scanf("%d",&n);
+	for(int i=1;i<=n;i++)
 	{
-		scanf("%d%d",&opt,&x);
-		if(opt==1) Insert(root,x);
-		else if(opt==2) Remove(root,x);
-		else if(opt==3) printf("%d\n",Rank(root,x)-1);
-		else if(opt==4) printf("%d\n",Kth(root,x+1));
-		else if(opt==5) printf("%d\n",Pre(root,x));
-		else if(opt==6) printf("%d\n",Next(root,x));
+		scanf("%d%d",&op,&a);
+		if(op==1)
+		{
+			split(rt,a,x,y);
+			rt=merge(merge(x,NewNode(a)),y);
+		}
+		else if(op==2)
+		{
+			split(rt,a,x,z);
+			split(x,a-1,x,y);
+			y=merge(ch[y][0],ch[y][1]);
+			rt=merge(merge(x,y),z);
+		}
+		else if(op==3)
+		{
+			split(rt,a-1,x,y);
+			printf("%d\n",sz[x]+1);
+			rt=merge(x,y);
+		}
+		else if(op==4) printf("%d\n",val[kth(rt,a)]);
+		else if(op==5)
+		{
+			split(rt,a-1,x,y);
+			printf("%d\n",val[kth(x,sz[x])]);
+			rt=merge(x,y);
+		}
+		else if(op==6)
+		{
+			split(rt,a,x,y);
+			printf("%d\n",val[kth(y,1)]);
+			rt=merge(x,y);
+		}
 	}
 	return 0;
 }
